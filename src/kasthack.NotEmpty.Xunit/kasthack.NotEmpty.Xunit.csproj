@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <PackageId>kasthack.NotEmpty.Xunit</PackageId>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <ProjectReference Include="..\kasthack.NotEmpty.Core\kasthack.NotEmpty.Core.csproj" />
+  </ItemGroup>
+</Project>

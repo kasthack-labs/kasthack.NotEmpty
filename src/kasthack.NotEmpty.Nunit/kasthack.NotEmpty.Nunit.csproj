@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <PackageId>kasthack.NotEmpty.Nunit</PackageId>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="NUnit" Version="3.13.2" />
+    <ProjectReference Include="..\kasthack.NotEmpty.Core\kasthack.NotEmpty.Core.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <PackageId>kasthack.NotEmpty.Raw</PackageId>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\kasthack.NotEmpty.Core\kasthack.NotEmpty.Core.csproj" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+  </ItemGroup>
+</Project>

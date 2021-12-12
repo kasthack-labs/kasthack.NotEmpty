@@ -1,0 +1,69 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.31911.260
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kasthack.NotEmpty.Core", "kasthack.NotEmpty.Core\kasthack.NotEmpty.Core.csproj", "{C4901934-9C70-482E-BAFA-F627F9631E5D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kasthack.NotEmpty.Xunit", "kasthack.NotEmpty.Xunit\kasthack.NotEmpty.Xunit.csproj", "{43D65B2D-B6A8-4E5A-A191-2F4DAB0070D6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build Properties", "Build Properties", "{40F9D2F2-7FE9-4A00-8F0F-0437899F6851}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kasthack.NotEmpty.Nunit", "kasthack.NotEmpty.Nunit\kasthack.NotEmpty.Nunit.csproj", "{0F84F504-87BC-46F2-A7AB-960FD6ED1899}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kasthack.NotEmpty.MsTest", "kasthack.NotEmpty.MsTest\kasthack.NotEmpty.MsTest.csproj", "{0A2BA47F-488E-48A4-9513-56D672E2A77F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Repo Info", "Repo Info", "{5CBE08C4-40CF-476C-9B31-E95ED2EE4C39}"
+	ProjectSection(SolutionItems) = preProject
+		..\.gitignore = ..\.gitignore
+		Directory.Build.props = Directory.Build.props
+		..\LICENSE = ..\LICENSE
+		..\README.md = ..\README.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kasthack.NotEmpty.Raw", "kasthack.NotEmpty.Raw\kasthack.NotEmpty.Raw.csproj", "{78A06400-338F-4494-9BC9-A414080B7824}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CI", "CI", "{FA63E98E-9B05-480A-B16D-8D253629254A}"
+	ProjectSection(SolutionItems) = preProject
+		..\.github\workflows\codeql-analysis.yml = ..\.github\workflows\codeql-analysis.yml
+		..\.github\workflows\dotnet.yml = ..\.github\workflows\dotnet.yml
+		..\.github\workflows\push.yml = ..\.github\workflows\push.yml
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C4901934-9C70-482E-BAFA-F627F9631E5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4901934-9C70-482E-BAFA-F627F9631E5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4901934-9C70-482E-BAFA-F627F9631E5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4901934-9C70-482E-BAFA-F627F9631E5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43D65B2D-B6A8-4E5A-A191-2F4DAB0070D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43D65B2D-B6A8-4E5A-A191-2F4DAB0070D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43D65B2D-B6A8-4E5A-A191-2F4DAB0070D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43D65B2D-B6A8-4E5A-A191-2F4DAB0070D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F84F504-87BC-46F2-A7AB-960FD6ED1899}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F84F504-87BC-46F2-A7AB-960FD6ED1899}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F84F504-87BC-46F2-A7AB-960FD6ED1899}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F84F504-87BC-46F2-A7AB-960FD6ED1899}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A2BA47F-488E-48A4-9513-56D672E2A77F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A2BA47F-488E-48A4-9513-56D672E2A77F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A2BA47F-488E-48A4-9513-56D672E2A77F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A2BA47F-488E-48A4-9513-56D672E2A77F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78A06400-338F-4494-9BC9-A414080B7824}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78A06400-338F-4494-9BC9-A414080B7824}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78A06400-338F-4494-9BC9-A414080B7824}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78A06400-338F-4494-9BC9-A414080B7824}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CF0E6B2E-03A8-40FA-8939-1B609DDDC39C}
+	EndGlobalSection
+EndGlobal

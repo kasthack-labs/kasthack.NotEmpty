@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <PackageId>kasthack.NotEmpty.MsTest</PackageId>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="MSTest.TestFramework" Version="2.2.8" />
+    <ProjectReference Include="..\kasthack.NotEmpty.Core\kasthack.NotEmpty.Core.csproj" />
+  </ItemGroup>
+</Project>
