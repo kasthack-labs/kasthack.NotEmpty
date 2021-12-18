@@ -33,6 +33,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CI", "CI", "{FA63E98E-9B05-
 		..\.github\workflows\push.yml = ..\.github\workflows\push.yml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kasthack.NotEmpty.Tests", "kasthack.NotEmpty.Tests\kasthack.NotEmpty.Tests.csproj", "{49386A26-B16E-45B3-93D7-5846A721C2EC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,10 @@ Global
 		{78A06400-338F-4494-9BC9-A414080B7824}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{78A06400-338F-4494-9BC9-A414080B7824}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{78A06400-338F-4494-9BC9-A414080B7824}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49386A26-B16E-45B3-93D7-5846A721C2EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49386A26-B16E-45B3-93D7-5846A721C2EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49386A26-B16E-45B3-93D7-5846A721C2EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49386A26-B16E-45B3-93D7-5846A721C2EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

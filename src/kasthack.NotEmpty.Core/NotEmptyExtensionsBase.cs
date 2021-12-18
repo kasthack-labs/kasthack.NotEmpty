@@ -7,13 +7,22 @@
 
     public abstract class NotEmptyExtensionsBase
     {
-        public void NotEmpty<T>(T? value) => this.NotEmptyInternal(value);
+        public void NotEmpty<T>(T? value)
+        {
+            // workaround for boxed structs
+            if (value is not null && typeof(T) == typeof(object) && value.GetType() != typeof(object))
+            {
+                this.NotEmptyBoxed(value, null!);
+            }
+
+            this.NotEmptyInternal(value);
+        }
 
         protected abstract void Assert(bool value, string message);
 
         private void NotEmptyInternal<T>(T? value, string? path = null)
         {
-            string message = $"value{path} is empty";
+            string message = GetEmptyMessage(path);
             this.Assert(!EqualityComparer<T>.Default.Equals(default!, value!), message);
             switch (value)
             {
@@ -24,7 +33,7 @@
                     var index = 0;
                     foreach (var item in e)
                     {
-                        this.NotEmptyBox(item, $"{path}[{index++}]");
+                        this.NotEmptyBoxed(item, $"{path}[{index++}]");
                     }
 
                     this.Assert(index != 0, message);
@@ -32,25 +41,33 @@
                 default:
                     foreach (var pathValue in CachedPropertyExtractor<T>.GetProperties(value))
                     {
-                        this.NotEmptyBox(pathValue.Value, $"{path}.{pathValue.Path}");
+                        this.NotEmptyBoxed(pathValue.Value, $"{path}.{pathValue.Path}");
                     }
 
                     break;
             }
         }
 
-        private void NotEmptyBox(object? value, string path)
+        private static string GetEmptyMessage(string? path)
         {
-            this.Assert(value is not null, $"value{path} is empty");
-            CachedEmptyDelegate.GetDelegate(value!.GetType())(value, path);
+            return $"value{path} is empty";
+        }
+
+        private void NotEmptyBoxed(object? value, string? path)
+        {
+            this.Assert(value is not null, GetEmptyMessage(path));
+            CachedEmptyDelegate.GetDelegate(this, value!.GetType())(value, path);
         }
 
         private static class CachedEmptyDelegate
         {
-            private static readonly MethodInfo NotEmptyMethod = typeof(NotEmptyExtensionsBase).GetMethod(nameof(NotEmptyExtensionsBase.NotEmptyInternal), BindingFlags.NonPublic | BindingFlags.Static)!.GetGenericMethodDefinition();
+            private static readonly MethodInfo NotEmptyMethod = typeof(NotEmptyExtensionsBase)
+                .GetMethod(nameof(NotEmptyExtensionsBase.NotEmptyInternal), BindingFlags.NonPublic | BindingFlags.Instance)!
+                .GetGenericMethodDefinition();
+
             private static readonly Dictionary<Type, Action<object?, string>> Delegates = new();
 
-            public static Action<object?, string> GetDelegate(Type type)
+            public static Action<object?, string> GetDelegate(NotEmptyExtensionsBase @this, Type type)
             {
                 if (!Delegates.TryGetValue(type, out var result))
                 {
@@ -63,6 +80,7 @@
                             result = (Action<object?, string>)Expression
                                 .Lambda(
                                     Expression.Call(
+                                        Expression.Constant(@this),
                                         NotEmptyMethod.MakeGenericMethod(type),
                                         Expression.Convert(
                                             valueParam,
