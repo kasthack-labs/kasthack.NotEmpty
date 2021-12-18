@@ -30,7 +30,10 @@
         public void PrimitiveWorks() => this.action(1);
 
         [Fact]
-        public void ZeroThrows() => Assert.ThrowsAny<Exception>(() => this.action(0));
+        public void EmptyStringThrows() => Assert.ThrowsAny<Exception>(() => this.action(string.Empty));
+
+        [Fact]
+        public void DefaultThrows() => Assert.ThrowsAny<Exception>(() => this.action(0));
 
         [Fact]
         public void EmptyArrayThrows() => Assert.ThrowsAny<Exception>(() => this.action(new object[] { }));
@@ -39,15 +42,15 @@
         public void EmptyListThrows() => Assert.ThrowsAny<Exception>(() => this.action(new List<object>()));
 
         [Fact]
-        public void ListWorks() => this.action(new List<object> { new object() });
-
-        [Fact]
-        public void ArrayWorks() => this.action(new object[] { new object() });
-
-        [Fact]
         public void ArrayWithDefaultThrows() => Assert.ThrowsAny<Exception>(() => this.action(new object[] { 1, 0 }));
 
         [Fact]
         public void ArrayWithNullThrows() => Assert.ThrowsAny<Exception>(() => this.action(new object?[] { null, new object() }));
+
+        [Fact]
+        public void ListWorks() => this.action(new List<object> { new object() });
+
+        [Fact]
+        public void ArrayWorks() => this.action(new object[] { new object() });
     }
 }

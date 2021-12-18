@@ -23,9 +23,9 @@ Manually checking properties for emptinness leaves an opportunity to miss someth
 * [Nunit](https://www.nuget.org/packages/kasthack.NotEmpty.Nunit/)
 * [Xunit](https://www.nuget.org/packages/kasthack.NotEmpty.Xunit/)
 * [MsTest](https://www.nuget.org/packages/kasthack.NotEmpty.MsTest/)
-* [Plain .NET](https://www.nuget.org/packages/kasthack.NotEmpty.Raw/)
+* [&lt;no frameworks&gt;](https://www.nuget.org/packages/kasthack.NotEmpty.Raw/)
 
-2. Check your objects / their properties for emptinness.
+2. Check your objects / their properties for emptinness. Look at the <a href="src/kasthack.NotEmpty.Tests/NotEmptyTestBase.cs">tests</a> for more details.
 
 ````csharp
 using kasthack.NotEmpty.Xunit;  // replace the namespace to match your test framework

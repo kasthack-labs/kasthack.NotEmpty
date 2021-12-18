@@ -9,7 +9,7 @@
     {
         public void NotEmpty<T>(T? value)
         {
-            // workaround for boxed structs
+            // workaround for boxed structs passed as objects
             if (value is not null && typeof(T) == typeof(object) && value.GetType() != typeof(object))
             {
                 this.NotEmptyBoxed(value, null!);
@@ -23,6 +23,7 @@
         private void NotEmptyInternal<T>(T? value, string? path = null)
         {
             string message = GetEmptyMessage(path);
+            this.Assert(value is not null, message); //fast lane
             this.Assert(!EqualityComparer<T>.Default.Equals(default!, value!), message);
             switch (value)
             {
@@ -48,10 +49,7 @@
             }
         }
 
-        private static string GetEmptyMessage(string? path)
-        {
-            return $"value{path} is empty";
-        }
+        private static string GetEmptyMessage(string? path) => $"value{path} is empty";
 
         private void NotEmptyBoxed(object? value, string? path)
         {
@@ -65,9 +63,9 @@
                 .GetMethod(nameof(NotEmptyExtensionsBase.NotEmptyInternal), BindingFlags.NonPublic | BindingFlags.Instance)!
                 .GetGenericMethodDefinition();
 
-            private static readonly Dictionary<Type, Action<object?, string>> Delegates = new();
+            private static readonly Dictionary<Type, Action<object?, string?>> Delegates = new();
 
-            public static Action<object?, string> GetDelegate(NotEmptyExtensionsBase @this, Type type)
+            public static Action<object?, string?> GetDelegate(NotEmptyExtensionsBase @this, Type type)
             {
                 if (!Delegates.TryGetValue(type, out var result))
                 {
@@ -77,7 +75,7 @@
                         {
                             var valueParam = Expression.Parameter(typeof(object));
                             var pathParam = Expression.Parameter(typeof(string));
-                            result = (Action<object?, string>)Expression
+                            result = (Action<object?, string?>)Expression
                                 .Lambda(
                                     Expression.Call(
                                         Expression.Constant(@this),
