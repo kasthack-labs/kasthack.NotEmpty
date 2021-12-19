@@ -52,5 +52,11 @@
 
         [Fact]
         public void ArrayWorks() => this.action(new object[] { new object() });
+
+        [Fact]
+        public void EmptyDateTimeThrows() => Assert.ThrowsAny<Exception>(() => this.action(default(DateTime)));
+
+        [Fact]
+        public void KnownTypeWithInfiniteRecursionDoesntThrow() => this.action(new DateTime(2000, 1, 1, 0, 0, 0));
     }
 }

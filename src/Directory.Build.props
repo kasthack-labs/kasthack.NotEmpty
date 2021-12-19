@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>net461;netcoreapp2.0;net6.0</TargetFrameworks>
     <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
     <NoWarn>SA1633;SA1600;SA1601;CS1591</NoWarn>
@@ -11,7 +11,7 @@
     <PublishDocumentationFile>true</PublishDocumentationFile>
     <PublishDocumentationFiles>true</PublishDocumentationFiles>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageVersion>1.0.3</PackageVersion>
+    <PackageVersion>1.0.4</PackageVersion>
     <PackageDescription>.NotEmpty&lt;T&gt;() test extension</PackageDescription>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>kasthack nunit xunit mstest test empty null notempty emptinness nullability</PackageTags>

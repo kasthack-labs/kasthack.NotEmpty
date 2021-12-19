@@ -20,13 +20,25 @@
 
         protected abstract void Assert(bool value, string message);
 
+        private static string GetEmptyMessage(string? path) => $"value{path} is empty";
+
         private void NotEmptyInternal<T>(T? value, string? path = null)
         {
             string message = GetEmptyMessage(path);
-            this.Assert(value is not null, message); //fast lane
+            this.Assert(value is not null, message); // fast lane
             this.Assert(!EqualityComparer<T>.Default.Equals(default!, value!), message);
             switch (value)
             {
+                // TODO: add max-depth instead of doing this
+                // infinite recursion workaround
+                case DateTimeOffset _:
+                case DateTime _:
+                case TimeSpan _:
+#if NET6_0_OR_GREATER
+                case DateOnly _:
+                case TimeOnly _:
+#endif
+                    break;
                 case string s:
                     this.Assert(!string.IsNullOrEmpty(s), message);
                     break;
@@ -49,14 +61,14 @@
             }
         }
 
-        private static string GetEmptyMessage(string? path) => $"value{path} is empty";
-
         private void NotEmptyBoxed(object? value, string? path)
         {
             this.Assert(value is not null, GetEmptyMessage(path));
             CachedEmptyDelegate.GetDelegate(this, value!.GetType())(value, path);
         }
 
+        // Creates NotEmptyInternal<T> wrapper:
+        // (object value, string path) => this.NotEmptyInternal<ACTUAL_TYPE_OF_VALUE>((ACTUAL_TYPE_OF_VALUE)value, path)
         private static class CachedEmptyDelegate
         {
             private static readonly MethodInfo NotEmptyMethod = typeof(NotEmptyExtensionsBase)
@@ -96,6 +108,7 @@
             }
         }
 
+        // Returns all properties as an array of KV pairs
         private static class CachedPropertyExtractor<T>
         {
             private static readonly PropertyInfo[] Properties = typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.SetProperty);
@@ -117,7 +130,7 @@
             }
         }
 
-        private class PathValue
+        private struct PathValue
         {
             public PathValue(string path, object? value)
             {
