@@ -13,9 +13,9 @@
             .GetMethod(nameof(NotEmptyExtensionsBase.NotEmptyInternal), BindingFlags.NonPublic | BindingFlags.Instance)!
             .GetGenericMethodDefinition();
 
-        private static readonly Dictionary<Type, Action<NotEmptyExtensionsBase, object?, AssertOptions, string?>> Delegates = new();
+        private static readonly Dictionary<Type, Action<NotEmptyExtensionsBase, object?, AssertContext>> Delegates = new();
 
-        public static Action<NotEmptyExtensionsBase, object?, AssertOptions, string?> GetDelegate(Type type)
+        public static Action<NotEmptyExtensionsBase, object?, AssertContext> GetDelegate(Type type)
         {
             if (!Delegates.TryGetValue(type, out var result))
             {
@@ -25,27 +25,24 @@
                     {
                         var thisParam = Expression.Parameter(typeof(NotEmptyExtensionsBase));
                         var valueParam = Expression.Parameter(typeof(object));
-                        var optionsParam = Expression.Parameter(typeof(AssertOptions));
-                        var pathParam = Expression.Parameter(typeof(string));
+                        var contextParam = Expression.Parameter(typeof(AssertContext));
                         var parameters = new[]
                         {
                                 thisParam,
                                 valueParam,
-                                optionsParam,
-                                pathParam,
+                                contextParam,
                         };
-                        result = (Action<NotEmptyExtensionsBase, object?, AssertOptions, string?>)Expression
+                        result = (Action<NotEmptyExtensionsBase, object?, AssertContext>)Expression
                             .Lambda(
                                 Expression.Call(
                                     thisParam,
                                     NotEmptyMethod.MakeGenericMethod(type),
                                     arguments: new Expression[]
                                     {
-                                            Expression.Convert(
-                                                valueParam,
-                                                type),
-                                            optionsParam,
-                                            pathParam,
+                                        Expression.Convert(
+                                            valueParam,
+                                            type),
+                                        contextParam,
                                     }),
                                 parameters)
                             .Compile();

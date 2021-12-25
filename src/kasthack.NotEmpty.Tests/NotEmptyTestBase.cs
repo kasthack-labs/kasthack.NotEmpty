@@ -13,23 +13,54 @@
 
         public NotEmptyTestBase(Action<object?, AssertOptions?> action) => this.action = action;
 
+        #region Object handling
         [Fact]
         public void NullThrows() => Assert.ThrowsAny<Exception>(() => this.Action(null));
 
         [Fact]
-        public void ObjectWorks() => this.Action(new object());
+        public void NotNullEmptyObjectWorks() => this.Action(new object());
 
         [Fact]
-        public void ObjectWithPropsWorks() => this.Action(new { Value = 1 });
+        public void NotNullObjectWithNotNullPropertyWorks() => this.Action(new { Value = new object() });
 
         [Fact]
-        public void ObjectWithDefaultThrows() => Assert.ThrowsAny<Exception>(() => this.Action(new { Value = 0 }));
+        public void NotNullObjectWithNullPropertyThrows() => Assert.ThrowsAny<Exception>(() => this.Action(new { Value = (object?)null, }));
 
         [Fact]
-        public void NestedObjectWithDefaultThrows() => Assert.ThrowsAny<Exception>(() => this.Action(new { Property = new { Value = 0, } }));
+        public void NestedObjectWithNullPropertyThrows() => Assert.ThrowsAny<Exception>(() => this.Action(new { Property = new { Value = 0, } }));
+        #endregion
+
+        #region Numbers
 
         [Fact]
-        public void PrimitiveWorks() => this.Action(1);
+        public void NotDefaultPrimitiveWorks() => this.Action(new { Value = 1 });
+
+        [Fact]
+        public void BoxedNotDefaultPrimitiveWorks() => this.Action(new { Value = (object)1 });
+
+        [Fact]
+        public void NotNullNullableWorks() => this.Action(new { Value = (int?)1 });
+
+        [Fact]
+        public void BoxedNotNullNullableWorks() => this.Action(new { Value = (object)new Nullable<int>(1) });
+
+        [Fact]
+        public void DefaultPrimitiveThrows() => Assert.ThrowsAny<Exception>(() => this.Action(new { Value = 0 }));
+
+        [Fact]
+        public void BoxedDefaultPrimitiveThrows() => Assert.ThrowsAny<Exception>(() => this.Action(new { Value = (object)0 }));
+
+        [Fact]
+        public void NullNullableThrows() => Assert.ThrowsAny<Exception>(() => this.Action(new { Value = new Nullable<int>(), }));
+
+        [Fact]
+        public void BoxedNullNullableThrows() => Assert.ThrowsAny<Exception>(() => this.Action(new { Value = (object)(new Nullable<int>()), }));
+
+        #endregion
+
+        #region Strings
+        [Fact]
+        public void NotEmptyStringWorks() => this.Action("test string");
 
         [Fact]
         public void EmptyStringThrows() => Assert.ThrowsAny<Exception>(() => this.Action(string.Empty));
@@ -37,36 +68,95 @@
         [Fact]
         public void EmptyStringDoesntThrowWhenAllowed() => this.Action(string.Empty, new AssertOptions { AllowEmptyStrings = true, });
 
+        #endregion
+
+        #region Collections
+
+        #region Emptinness
+
         [Fact]
-        public void DefaultThrows() => Assert.ThrowsAny<Exception>(() => this.Action(0));
+        public void NotEmptyListWorks() => this.Action(new List<object> { new object() });
+
+        [Fact]
+        public void NotEmptyArrayWorks() => this.Action(new object[] { new object() });
 
         [Fact]
         public void EmptyArrayThrows() => Assert.ThrowsAny<Exception>(() => this.Action(new object[] { }));
 
         [Fact]
-        public void EmptyArrayDoesntThrowWhenAllowed() => this.Action(new object[] { }, new AssertOptions { AllowEmptyCollections = true, });
-
-        [Fact]
         public void EmptyListThrows() => Assert.ThrowsAny<Exception>(() => this.Action(new List<object>()));
 
         [Fact]
-        public void ArrayWithDefaultThrows() => Assert.ThrowsAny<Exception>(() => this.Action(new object[] { 1, 0 }));
+        public void EmptyArrayDoesntThrowWhenAllowed() => this.Action(new object[] { }, new AssertOptions { AllowEmptyCollections = true, });
+
+        #endregion
+
+        #region Dictionaries
 
         [Fact]
-        public void ArrayWithNullThrows() => Assert.ThrowsAny<Exception>(() => this.Action(new object?[] { null, new object() }));
+        public void EmptyDictionaryThrows() => Assert.ThrowsAny<Exception>(() => this.Action(new Dictionary<string, string>()));
 
         [Fact]
-        public void ListWorks() => this.Action(new List<object> { new object() });
+        public void NotEmptyDictionaryWorks() => this.Action(new Dictionary<string, string> { { "key", "value" } });
 
         [Fact]
-        public void ArrayWorks() => this.Action(new object[] { new object() });
+        public void NotEmptyDictionaryWithBoxedKeysWorks() => this.Action(new Dictionary<int, string> { { 1, "value" } });
+
+        [Fact]
+        public void DictionaryWithNullValuesThrows() => Assert.ThrowsAny<Exception>(() => this.Action(new Dictionary<string, string>() { { "key", null! }, }));
+
+        [Fact]
+        public void EmptyDictionaryDoesntThrowWhenAllowed() => this.Action(new Dictionary<string, string>(), new AssertOptions { AllowEmptyCollections = true, });
+
+        #endregion
+
+        #region Default elements
+
+        [Fact]
+        public void ArrayWithDefaultPrimitiveThrows() => Assert.ThrowsAny<Exception>(() => this.Action(new object[] { 1, 0 }));
+
+        [Fact]
+        public void ArrayWithDefaultPrimitiveDoesntThrowWhenAllowed() => this.Action(new object[] { 1, 0 }, new AssertOptions { AllowZerosInNumberArrays = true });
+
+        [Fact]
+        public void AllowZerosInNumberArraysWorksCorrectlyForChildren() => Assert.ThrowsAny<Exception>(() => this.Action(new[] { new { Value = 0 } }, new AssertOptions { AllowZerosInNumberArrays = true }));
+
+        [Fact]
+        public void ArrayWithNullThrows() => Assert.ThrowsAny<Exception>(() => this.Action(new object?[] { new object(), null }));
+        #endregion
+
+        #endregion
+
+        #region DateTime
 
         [Fact]
         public void EmptyDateTimeThrows() => Assert.ThrowsAny<Exception>(() => this.Action(default(DateTime)));
 
         [Fact]
-        public void KnownTypeWithInfiniteRecursionDoesntThrow() => this.Action(new DateTime(2000, 1, 1, 0, 0, 0));
+        public void NotEmptyDateTimeWithSomeZeroesWorks() => this.Action(new DateTime(2000, 1, 1, 0, 0, 0));
+        #endregion
 
+        #region Depth
+
+        [Fact(Skip = "OOM")]
+        public void InfititeDepthThrowsWhenAllowed() => Assert.ThrowsAny<Exception>(() => this.Action(new InfiniteNestedStruct(), new AssertOptions { MaxDepth = null }));
+
+        [Fact]
+        public void InfiniteDepthDoesntThrowWithDefaultSettings() => this.Action(new InfiniteNestedStruct());
+
+        [Fact]
+        public void InvalidDepthThrows() => Assert.ThrowsAny<Exception>(() => this.Action(0, new AssertOptions { MaxDepth = -1 }));
+
+        [Fact]
+        public void DepthZeroWorks() => Assert.ThrowsAny<Exception>(() => this.Action(0, new AssertOptions { MaxDepth = 0 }));
+
+        public struct InfiniteNestedStruct
+        {
+            public int Value { get; set; } = 1;
+
+            public InfiniteNestedStruct Child => new InfiniteNestedStruct { Value = this.Value + 1 };
+        }
+        #endregion
 
         private void Action(object? value, AssertOptions? options = null) => this.action(value, options);
     }

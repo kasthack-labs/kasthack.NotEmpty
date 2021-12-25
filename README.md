@@ -41,5 +41,45 @@ public class MyAmazingTest
 
         //<actual asserts>
     }
+
+    [Fact]
+    public void TestOptions()
+    {
+        // won't throw
+        new {
+            PropertyThanLegitimatelyCanBeAnEmptyStringButNotNull = "",
+        }.NotEmpty(new AssertOptions {
+            AllowEmptyStrings = true,
+        });
+
+        //won't throw
+        new {
+            PropertyThanLegitimatelyCanBeAnEmptyCollectionButNotNull = new int[]{},
+        }.NotEmpty(new AssertOptions {
+            AllowEmptyCollections = true,
+        });
+
+        // won't throw
+        new {
+            FileContentThatObviouslyContainsSomeNullBytes = new byte[]{ 0 }
+        }.NotEmpty(new AssertOptions {
+            AllowZerosInNumberArrays = true
+        });
+
+        // won't throw BUT will stop at 200 iterations
+        // default MaxDepth is 100
+        new {
+            DeeplyNestedObject = new InfiniteNestedStruct()
+        }.NotEmpty(new AssertOptions {
+            MaxDepth = 200
+        });
+    }
+
+    public struct InfiniteNestedStruct
+    {
+        public int Value { get; set; } = 1;
+
+        public InfiniteNestedStruct Child => new InfiniteNestedStruct { Value = this.Value + 1 };
+    }
 }
 ````

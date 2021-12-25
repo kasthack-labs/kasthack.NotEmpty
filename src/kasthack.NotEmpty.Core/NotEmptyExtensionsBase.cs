@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Numerics;
 
     public abstract class NotEmptyExtensionsBase
     {
@@ -11,28 +12,41 @@
         public void NotEmpty<T>(T? value, AssertOptions? assertOptions)
         {
             assertOptions ??= AssertOptions.Default;
-
-            // workaround for boxed structs passed as objects
-            if (value is not null && typeof(T) == typeof(object) && value.GetType() != typeof(object))
+            if (assertOptions.MaxDepth.HasValue && assertOptions.MaxDepth < 0)
             {
-                this.NotEmptyBoxed(value, assertOptions, null!);
+                throw new ArgumentOutOfRangeException($"{nameof(assertOptions)}.{nameof(assertOptions.MaxDepth)}", $"{nameof(assertOptions.MaxDepth)} must be greater than 0 / null for unlimited traversing.");
             }
 
-            this.NotEmptyInternal(value, assertOptions, null);
+            // workaround for boxed structs passed as objects
+            this.NotEmptyBoxed(value, new AssertContext(assertOptions));
         }
 
         protected abstract void Assert(bool value, string message);
 
-        internal void NotEmptyInternal<T>(T? value, AssertOptions assertOptions, string? path = null)
+        internal void NotEmptyInternal<T>(T? value, AssertContext context)
         {
-            string message = GetEmptyMessage(path);
+            if (context.Options.MaxDepth != null && context.Options.MaxDepth.Value < context.CurrentDepth)
+            {
+                return;
+            }
+
+            string message = GetEmptyMessage(context.Path);
             this.Assert(value is not null, message); // fast lane
-            this.Assert(!EqualityComparer<T>.Default.Equals(default!, value!), message);
+            if (
+                !(context.Options.AllowZerosInNumberArrays &&
+                context.IsArrayElement &&
+                value is byte or sbyte or short or ushort or char or int or uint or long or ulong or float or double or decimal or BigInteger
+                #if NET5_0_OR_GREATER
+                    or Half
+                #endif
+                ))
+            {
+                this.Assert(!EqualityComparer<T>.Default.Equals(default!, value!), message);
+            }
 
             switch (value)
             {
-                // TODO: add max-depth instead of doing this
-                // infinite recursion workaround
+                // ignore properties on builtin time structs as it's a reasonable thing to do
                 case DateTimeOffset _
                     or DateTime _
                     or TimeSpan _
@@ -44,19 +58,39 @@
                     break;
                 case string s:
                     this.Assert(
-                        assertOptions.AllowEmptyStrings
+                        context.Options.AllowEmptyStrings
                             ? s != null
                             : !string.IsNullOrEmpty(s),
                         message);
+                    break;
+                case System.Collections.IDictionary d:
+                    var cnt = 0;
+                    foreach (var key in d.Keys)
+                    {
+                        cnt++;
+                        using (context.EnterPath($"[{key}]", false))
+                        {
+                            this.NotEmptyBoxed(d[key], context);
+                        }
+                    }
+
+                    if (!context.Options.AllowEmptyCollections)
+                    {
+                        this.Assert(cnt != 0, message);
+                    }
+
                     break;
                 case System.Collections.IEnumerable e:
                     var index = 0;
                     foreach (var item in e)
                     {
-                        this.NotEmptyBoxed(item, assertOptions, $"{path}[{index++}]");
+                        using (context.EnterPath(index++.ToString(), true))
+                        {
+                            this.NotEmptyBoxed(item, context);
+                        }
                     }
 
-                    if (!assertOptions.AllowEmptyCollections)
+                    if (!context.Options.AllowEmptyCollections)
                     {
                         this.Assert(index != 0, message);
                     }
@@ -65,17 +99,20 @@
                 default:
                     foreach (var pathValue in CachedPropertyExtractor<T>.GetProperties(value))
                     {
-                        this.NotEmptyBoxed(pathValue.Value, assertOptions, $"{path}.{pathValue.Path}");
+                        using (context.EnterPath(pathValue.Path, false))
+                        {
+                            this.NotEmptyBoxed(pathValue.Value, context);
+                        }
                     }
 
                     break;
             }
         }
 
-        internal void NotEmptyBoxed(object? value, AssertOptions assertOptions, string? path)
+        internal void NotEmptyBoxed(object? value, AssertContext context)
         {
-            this.Assert(value is not null, GetEmptyMessage(path));
-            CachedEmptyDelegate.GetDelegate(value!.GetType())(this, value, assertOptions, path);
+            this.Assert(value is not null, GetEmptyMessage(context.Path));
+            CachedEmptyDelegate.GetDelegate(value!.GetType())(this, value, context);
         }
 
         private static string GetEmptyMessage(string? path) => $"value{path} is empty";
