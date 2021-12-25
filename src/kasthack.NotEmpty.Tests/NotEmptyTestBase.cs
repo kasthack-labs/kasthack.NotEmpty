@@ -5,58 +5,65 @@
 
     using global::Xunit;
 
+    using kasthack.NotEmpty.Core;
+
     public abstract class NotEmptyTestBase
     {
-        private readonly Action<object?> action;
+        private readonly Action<object?, AssertOptions?> action;
 
-        public NotEmptyTestBase(Action<object?> action) => this.action = action;
-
-        [Fact]
-        public void NullThrows() => Assert.ThrowsAny<Exception>(() => this.action(null));
+        public NotEmptyTestBase(Action<object?, AssertOptions?> action) => this.action = action;
 
         [Fact]
-        public void ObjectWorks() => this.action(new object());
+        public void NullThrows() => Assert.ThrowsAny<Exception>(() => this.Action(null));
 
         [Fact]
-        public void ObjectWithPropsWorks() => this.action(new { Value = 1 });
+        public void ObjectWorks() => this.Action(new object());
 
         [Fact]
-        public void ObjectWithDefaultThrows() => Assert.ThrowsAny<Exception>(() => this.action(new { Value = 0 }));
+        public void ObjectWithPropsWorks() => this.Action(new { Value = 1 });
 
         [Fact]
-        public void NestedObjectWithDefaultThrows() => Assert.ThrowsAny<Exception>(() => this.action(new { Property = new { Value = 0, } }));
+        public void ObjectWithDefaultThrows() => Assert.ThrowsAny<Exception>(() => this.Action(new { Value = 0 }));
 
         [Fact]
-        public void PrimitiveWorks() => this.action(1);
+        public void NestedObjectWithDefaultThrows() => Assert.ThrowsAny<Exception>(() => this.Action(new { Property = new { Value = 0, } }));
 
         [Fact]
-        public void EmptyStringThrows() => Assert.ThrowsAny<Exception>(() => this.action(string.Empty));
+        public void PrimitiveWorks() => this.Action(1);
 
         [Fact]
-        public void DefaultThrows() => Assert.ThrowsAny<Exception>(() => this.action(0));
+        public void EmptyStringThrows() => Assert.ThrowsAny<Exception>(() => this.Action(string.Empty));
 
         [Fact]
-        public void EmptyArrayThrows() => Assert.ThrowsAny<Exception>(() => this.action(new object[] { }));
+        public void DefaultThrows() => Assert.ThrowsAny<Exception>(() => this.Action(0));
 
         [Fact]
-        public void EmptyListThrows() => Assert.ThrowsAny<Exception>(() => this.action(new List<object>()));
+        public void EmptyArrayThrows() => Assert.ThrowsAny<Exception>(() => this.Action(new object[] { }));
 
         [Fact]
-        public void ArrayWithDefaultThrows() => Assert.ThrowsAny<Exception>(() => this.action(new object[] { 1, 0 }));
+        public void EmptyListThrows() => Assert.ThrowsAny<Exception>(() => this.Action(new List<object>()));
 
         [Fact]
-        public void ArrayWithNullThrows() => Assert.ThrowsAny<Exception>(() => this.action(new object?[] { null, new object() }));
+        public void ArrayWithDefaultThrows() => Assert.ThrowsAny<Exception>(() => this.Action(new object[] { 1, 0 }));
 
         [Fact]
-        public void ListWorks() => this.action(new List<object> { new object() });
+        public void ArrayWithNullThrows() => Assert.ThrowsAny<Exception>(() => this.Action(new object?[] { null, new object() }));
 
         [Fact]
-        public void ArrayWorks() => this.action(new object[] { new object() });
+        public void ListWorks() => this.Action(new List<object> { new object() });
 
         [Fact]
-        public void EmptyDateTimeThrows() => Assert.ThrowsAny<Exception>(() => this.action(default(DateTime)));
+        public void ArrayWorks() => this.Action(new object[] { new object() });
 
         [Fact]
-        public void KnownTypeWithInfiniteRecursionDoesntThrow() => this.action(new DateTime(2000, 1, 1, 0, 0, 0));
+        public void EmptyDateTimeThrows() => Assert.ThrowsAny<Exception>(() => this.Action(default(DateTime)));
+
+        [Fact]
+        public void KnownTypeWithInfiniteRecursionDoesntThrow() => this.Action(new DateTime(2000, 1, 1, 0, 0, 0));
+
+        [Fact]
+        public void AllowsEmptyStringsWithConfiguredOption() => this.Action("", new AssertOptions { AllowEmptyStrings = true, });
+
+        private void Action(object? value, AssertOptions? options = null) => this.action(value, options);
     }
 }

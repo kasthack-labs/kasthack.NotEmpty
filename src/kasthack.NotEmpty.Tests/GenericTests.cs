@@ -3,7 +3,7 @@ namespace kasthack.NotEmpty.Tests
     public class XunitNotEmptyTest : NotEmptyTestBase
     {
         public XunitNotEmptyTest()
-            : base(x => kasthack.NotEmpty.Xunit.NotEmptyExtensions.NotEmpty(x))
+            : base((x, o) => kasthack.NotEmpty.Xunit.NotEmptyExtensions.NotEmpty(x, o))
         {
         }
     }
@@ -11,7 +11,7 @@ namespace kasthack.NotEmpty.Tests
     public class NunitNotEmptyTest : NotEmptyTestBase
     {
         public NunitNotEmptyTest()
-            : base(x => kasthack.NotEmpty.Nunit.NotEmptyExtensions.NotEmpty(x))
+            : base((x, o) => kasthack.NotEmpty.Nunit.NotEmptyExtensions.NotEmpty(x, o))
         {
         }
     }
@@ -19,7 +19,7 @@ namespace kasthack.NotEmpty.Tests
     public class MsTestNotEmptyTest : NotEmptyTestBase
     {
         public MsTestNotEmptyTest()
-            : base(x => kasthack.NotEmpty.MsTest.NotEmptyExtensions.NotEmpty(x))
+            : base((x, o) => kasthack.NotEmpty.MsTest.NotEmptyExtensions.NotEmpty(x, o))
         {
         }
     }
@@ -27,7 +27,7 @@ namespace kasthack.NotEmpty.Tests
     public class RawNotEmptyTest : NotEmptyTestBase
     {
         public RawNotEmptyTest()
-            : base(x => kasthack.NotEmpty.Raw.NotEmptyExtensions.NotEmpty(x))
+            : base((x, o) => kasthack.NotEmpty.Raw.NotEmptyExtensions.NotEmpty(x, o))
         {
         }
     }

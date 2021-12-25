@@ -7,26 +7,32 @@
 
     public abstract class NotEmptyExtensionsBase
     {
-        public void NotEmpty<T>(T? value)
+        [Obsolete($"Use {nameof(NotEmptyExtensionsBase.NotEmpty)}<T>(T, {nameof(AssertOptions)}) instead.")]
+        public void NotEmpty<T>(T? value) => this.NotEmpty(value, null);
+
+        public void NotEmpty<T>(T? value, AssertOptions? assertOptions)
         {
+            assertOptions ??= AssertOptions.Default;
+
             // workaround for boxed structs passed as objects
             if (value is not null && typeof(T) == typeof(object) && value.GetType() != typeof(object))
             {
-                this.NotEmptyBoxed(value, null!);
+                this.NotEmptyBoxed(value, assertOptions, null!);
             }
 
-            this.NotEmptyInternal(value);
+            this.NotEmptyInternal(value, assertOptions, null);
         }
 
         protected abstract void Assert(bool value, string message);
 
         private static string GetEmptyMessage(string? path) => $"value{path} is empty";
 
-        private void NotEmptyInternal<T>(T? value, string? path = null)
+        private void NotEmptyInternal<T>(T? value, AssertOptions assertOptions, string? path = null)
         {
             string message = GetEmptyMessage(path);
             this.Assert(value is not null, message); // fast lane
             this.Assert(!EqualityComparer<T>.Default.Equals(default!, value!), message);
+
             switch (value)
             {
                 // TODO: add max-depth instead of doing this
@@ -40,13 +46,17 @@
 #endif
                     break;
                 case string s:
-                    this.Assert(!string.IsNullOrEmpty(s), message);
+                    this.Assert(
+                        assertOptions.AllowEmptyStrings
+                            ? s != null
+                            : !string.IsNullOrEmpty(s),
+                        message);
                     break;
                 case System.Collections.IEnumerable e:
                     var index = 0;
                     foreach (var item in e)
                     {
-                        this.NotEmptyBoxed(item, $"{path}[{index++}]");
+                        this.NotEmptyBoxed(item, assertOptions, $"{path}[{index++}]");
                     }
 
                     this.Assert(index != 0, message);
@@ -54,30 +64,30 @@
                 default:
                     foreach (var pathValue in CachedPropertyExtractor<T>.GetProperties(value))
                     {
-                        this.NotEmptyBoxed(pathValue.Value, $"{path}.{pathValue.Path}");
+                        this.NotEmptyBoxed(pathValue.Value, assertOptions, $"{path}.{pathValue.Path}");
                     }
 
                     break;
             }
         }
 
-        private void NotEmptyBoxed(object? value, string? path)
+        private void NotEmptyBoxed(object? value, AssertOptions assertOptions, string? path)
         {
             this.Assert(value is not null, GetEmptyMessage(path));
-            CachedEmptyDelegate.GetDelegate(this, value!.GetType())(value, path);
+            CachedEmptyDelegate.GetDelegate(value!.GetType())(this, value, assertOptions, path);
         }
 
         // Creates NotEmptyInternal<T> wrapper:
-        // (object value, string path) => this.NotEmptyInternal<ACTUAL_TYPE_OF_VALUE>((ACTUAL_TYPE_OF_VALUE)value, path)
+        // (object value, AssertOptions options, string path) => this.NotEmptyInternal<ACTUAL_TYPE_OF_VALUE>((ACTUAL_TYPE_OF_VALUE)value, options, path)
         private static class CachedEmptyDelegate
         {
             private static readonly MethodInfo NotEmptyMethod = typeof(NotEmptyExtensionsBase)
                 .GetMethod(nameof(NotEmptyExtensionsBase.NotEmptyInternal), BindingFlags.NonPublic | BindingFlags.Instance)!
                 .GetGenericMethodDefinition();
 
-            private static readonly Dictionary<Type, Action<object?, string?>> Delegates = new();
+            private static readonly Dictionary<Type, Action<NotEmptyExtensionsBase, object?, AssertOptions, string?>> Delegates = new();
 
-            public static Action<object?, string?> GetDelegate(NotEmptyExtensionsBase @this, Type type)
+            public static Action<NotEmptyExtensionsBase, object?, AssertOptions, string?> GetDelegate(Type type)
             {
                 if (!Delegates.TryGetValue(type, out var result))
                 {
@@ -85,19 +95,31 @@
                     {
                         if (!Delegates.TryGetValue(type, out result))
                         {
+                            var thisParam = Expression.Parameter(typeof(NotEmptyExtensionsBase));
                             var valueParam = Expression.Parameter(typeof(object));
+                            var optionsParam = Expression.Parameter(typeof(AssertOptions));
                             var pathParam = Expression.Parameter(typeof(string));
-                            result = (Action<object?, string?>)Expression
+                            var parameters = new[]
+                            {
+                                thisParam,
+                                valueParam,
+                                optionsParam,
+                                pathParam,
+                            };
+                            result = (Action<NotEmptyExtensionsBase, object?, AssertOptions, string?>)Expression
                                 .Lambda(
                                     Expression.Call(
-                                        Expression.Constant(@this),
+                                        thisParam,
                                         NotEmptyMethod.MakeGenericMethod(type),
-                                        Expression.Convert(
-                                            valueParam,
-                                            type),
-                                        pathParam),
-                                    valueParam,
-                                    pathParam)
+                                        arguments: new Expression[]
+                                        {
+                                            Expression.Convert(
+                                                valueParam,
+                                                type),
+                                            optionsParam,
+                                            pathParam,
+                                        }),
+                                    parameters)
                                 .Compile();
                             Delegates[type] = result;
                         }
@@ -142,5 +164,27 @@
 
             public object? Value { get; }
         }
+    }
+
+    public class AssertOptions
+    {
+        internal static AssertOptions Default { get; } = new();
+
+        /*
+        ///// <summary>
+        ///// Maximum assert depth. Useful for preventing stack overflows for objects with generated properties / complex graphs.
+        ///// </summary>
+        //public int? MaxDepth { get; set; } = 100;
+
+        ///// <summary>
+        ///// Allow zeros in number arrays. Useful when you have binary data as a byte array.
+        ///// </summary>
+        //public bool AllowZerosInNumberArrays { get; set; } = false;
+        */
+
+        /// <summary>
+        /// Allows empty strings but not nulls.
+        /// </summary>
+        public bool AllowEmptyStrings { get; set; } = false;
     }
 }

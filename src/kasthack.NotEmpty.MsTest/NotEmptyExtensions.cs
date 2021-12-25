@@ -1,5 +1,6 @@
 namespace kasthack.NotEmpty.MsTest
 {
+    using System;
     using kasthack.NotEmpty.Core;
 
     /// <summary>
@@ -14,7 +15,16 @@ namespace kasthack.NotEmpty.MsTest
         /// </summary>
         /// <param name="value">Value to test for emptinness.</param>
         /// <typeparam name="T">Type of value(inferred by the compiler).</typeparam>
-        public static void NotEmpty<T>(this T? value) => Instance.NotEmpty(value);
+        [Obsolete]
+        public static void NotEmpty<T>(this T? value) => NotEmpty<T>(value, default);
+
+        /// <summary>
+        /// Tests objects for emptinness(being null, default(T), empty collection or string) recursively.
+        /// </summary>
+        /// <param name="value">Value to test for emptinness.</param>
+        /// <param name="assertOptions">Test options.</param>
+        /// <typeparam name="T">Type of value(inferred by the compiler).</typeparam>
+        public static void NotEmpty<T>(this T? value, AssertOptions? assertOptions = null) => Instance.NotEmpty(value, assertOptions);
 
         private class NotEmptyExtensionsBaseXunit : NotEmptyExtensionsBase
         {
