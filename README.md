@@ -1,6 +1,7 @@
 # kasthack.NotEmpty
 
-[![Github All Releases](https://img.shields.io/github/downloads/kasthack-labs/kasthack.NotEmpty/total.svg)](https://github.com/kasthack-labs/kasthack.NotEmpty/releases/latest)
+
+![NuGet](https://img.shields.io/nuget/dt/kasthack.NotEmpty.Core.svg)
 [![GitHub release](https://img.shields.io/github/release/kasthack-labs/kasthack.NotEmpty.svg)](https://github.com/kasthack-labs/kasthack.NotEmpty/releases/latest)
 [![license](https://img.shields.io/github/license/kasthack-labs/kasthack.NotEmpty.svg)](LICENSE)
 [![.NET Status](https://github.com/kasthack-labs/kasthack.NotEmpty/workflows/.NET/badge.svg)](https://github.com/kasthack-labs/kasthack.NotEmpty/actions?query=workflow%3A.NET)
