@@ -33,7 +33,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CI", "CI", "{FA63E98E-9B05-
 		..\.github\workflows\push.yml = ..\.github\workflows\push.yml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kasthack.NotEmpty.Tests", "kasthack.NotEmpty.Tests\kasthack.NotEmpty.Tests.csproj", "{49386A26-B16E-45B3-93D7-5846A721C2EC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kasthack.NotEmpty.Tests", "kasthack.NotEmpty.Tests\kasthack.NotEmpty.Tests.csproj", "{49386A26-B16E-45B3-93D7-5846A721C2EC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FrameworkSpecific", "FrameworkSpecific", "{8B7A3E19-0D80-4474-B5E1-1881E5CE7852}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{2E7DFFBC-A4B6-414C-80BC-A39A7818B630}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -68,6 +72,15 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C4901934-9C70-482E-BAFA-F627F9631E5D} = {2E7DFFBC-A4B6-414C-80BC-A39A7818B630}
+		{43D65B2D-B6A8-4E5A-A191-2F4DAB0070D6} = {8B7A3E19-0D80-4474-B5E1-1881E5CE7852}
+		{0F84F504-87BC-46F2-A7AB-960FD6ED1899} = {8B7A3E19-0D80-4474-B5E1-1881E5CE7852}
+		{0A2BA47F-488E-48A4-9513-56D672E2A77F} = {8B7A3E19-0D80-4474-B5E1-1881E5CE7852}
+		{78A06400-338F-4494-9BC9-A414080B7824} = {8B7A3E19-0D80-4474-B5E1-1881E5CE7852}
+		{49386A26-B16E-45B3-93D7-5846A721C2EC} = {2E7DFFBC-A4B6-414C-80BC-A39A7818B630}
+		{8B7A3E19-0D80-4474-B5E1-1881E5CE7852} = {2E7DFFBC-A4B6-414C-80BC-A39A7818B630}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CF0E6B2E-03A8-40FA-8939-1B609DDDC39C}

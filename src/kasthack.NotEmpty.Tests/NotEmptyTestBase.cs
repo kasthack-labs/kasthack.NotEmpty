@@ -35,10 +35,16 @@
         public void EmptyStringThrows() => Assert.ThrowsAny<Exception>(() => this.Action(string.Empty));
 
         [Fact]
+        public void EmptyStringDoesntThrowWhenAllowed() => this.Action(string.Empty, new AssertOptions { AllowEmptyStrings = true, });
+
+        [Fact]
         public void DefaultThrows() => Assert.ThrowsAny<Exception>(() => this.Action(0));
 
         [Fact]
         public void EmptyArrayThrows() => Assert.ThrowsAny<Exception>(() => this.Action(new object[] { }));
+
+        [Fact]
+        public void EmptyArrayDoesntThrowWhenAllowed() => this.Action(new object[] { }, new AssertOptions { AllowEmptyCollections = true, });
 
         [Fact]
         public void EmptyListThrows() => Assert.ThrowsAny<Exception>(() => this.Action(new List<object>()));
@@ -61,8 +67,6 @@
         [Fact]
         public void KnownTypeWithInfiniteRecursionDoesntThrow() => this.Action(new DateTime(2000, 1, 1, 0, 0, 0));
 
-        [Fact]
-        public void AllowsEmptyStringsWithConfiguredOption() => this.Action("", new AssertOptions { AllowEmptyStrings = true, });
 
         private void Action(object? value, AssertOptions? options = null) => this.action(value, options);
     }
