@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// Dispose doesn't do what you migth think.
@@ -14,7 +15,7 @@
 
         public int CurrentDepth => this.pathSegments.Count;
 
-        public string Path => string.Concat(this.pathSegments);
+        public string Path => "(value)" + string.Concat(this.pathSegments.Reverse());
 
         public bool IsArrayElement { get; set; } = false;
 

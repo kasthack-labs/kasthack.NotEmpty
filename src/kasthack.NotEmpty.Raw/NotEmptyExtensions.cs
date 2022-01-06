@@ -1,6 +1,7 @@
 ﻿namespace kasthack.NotEmpty.Raw
 {
     using System;
+
     using kasthack.NotEmpty.Core;
 
     /// <summary>
@@ -8,15 +9,7 @@
     /// </summary>
     public static class NotEmptyExtensions
     {
-        private static readonly NotEmptyExtensionsBaseXunit Instance = new();
-
-        /// <summary>
-        /// Tests objects for emptinness(being null, default(T), empty collection or string) recursively.
-        /// </summary>
-        /// <param name="value">Value to test for emptinness.</param>
-        /// <typeparam name="T">Type of value(inferred by the compiler).</typeparam>
-        [Obsolete]
-        public static void NotEmpty<T>(this T? value) => NotEmpty<T>(value, default);
+        private static readonly NotEmptyExtensionsBaseRaw Instance = new();
 
         /// <summary>
         /// Tests objects for emptinness(being null, default(T), empty collection or string) recursively.
@@ -26,15 +19,26 @@
         /// <typeparam name="T">Type of value(inferred by the compiler).</typeparam>
         public static void NotEmpty<T>(this T? value, AssertOptions? assertOptions = null) => Instance.NotEmpty(value, assertOptions);
 
-        private class NotEmptyExtensionsBaseXunit : NotEmptyExtensionsBase
+        private class NotEmptyExtensionsBaseRaw : NotEmptyExtensionsBase
         {
-            protected override void Assert(bool value, string message)
+            protected override void Assert(bool value, string message, string path)
             {
                 if (!value)
                 {
-                    throw new System.ComponentModel.DataAnnotations.ValidationException(message);
+                    throw new EmptyException(message, path);
                 }
             }
         }
+    }
+
+    public class EmptyException : Exception
+    {
+        public EmptyException(string message, string path)
+            : base(message)
+        {
+            this.Path = path;
+        }
+
+        public string Path { get; }
     }
 }

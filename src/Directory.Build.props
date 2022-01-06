@@ -11,7 +11,7 @@
     <PublishDocumentationFile>true</PublishDocumentationFile>
     <PublishDocumentationFiles>true</PublishDocumentationFiles>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageVersion>1.0.7</PackageVersion>
+    <PackageVersion>1.1.0</PackageVersion>
     <PackageDescription>.NotEmpty&lt;T&gt;() test extension</PackageDescription>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>kasthack nunit xunit mstest test empty null notempty emptinness nullability</PackageTags>

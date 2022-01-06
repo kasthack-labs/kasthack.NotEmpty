@@ -21,8 +21,6 @@
             this.NotEmptyBoxed(value, new AssertContext(assertOptions));
         }
 
-        protected abstract void Assert(bool value, string message);
-
         internal void NotEmptyInternal<T>(T? value, AssertContext context)
         {
             if (context.Options.MaxDepth != null && context.Options.MaxDepth.Value < context.CurrentDepth)
@@ -30,18 +28,19 @@
                 return;
             }
 
-            string message = GetEmptyMessage(context.Path);
-            this.Assert(value is not null, message); // fast lane
+            var path = context.Path;
+            string message = GetEmptyMessage(path);
+            this.Assert(value is not null, message, path); // fast lane
             if (
                 !(context.Options.AllowZerosInNumberArrays &&
                 context.IsArrayElement &&
                 value is byte or sbyte or short or ushort or char or int or uint or long or ulong or float or double or decimal or BigInteger
-                #if NET5_0_OR_GREATER
-                    or Half
-                #endif
+#if NET5_0_OR_GREATER
+                    or Half or nint or nuint
+#endif
                 ))
             {
-                this.Assert(!EqualityComparer<T>.Default.Equals(default!, value!), message);
+                this.Assert(!EqualityComparer<T>.Default.Equals(default!, value!), message, path);
             }
 
             switch (value)
@@ -61,7 +60,8 @@
                         context.Options.AllowEmptyStrings
                             ? s != null
                             : !string.IsNullOrEmpty(s),
-                        message);
+                        message,
+                        path);
                     break;
                 case System.Collections.IDictionary d:
                     var cnt = 0;
@@ -76,7 +76,7 @@
 
                     if (!context.Options.AllowEmptyCollections)
                     {
-                        this.Assert(cnt != 0, message);
+                        this.Assert(cnt != 0, message, path);
                     }
 
                     break;
@@ -84,7 +84,7 @@
                     var index = 0;
                     foreach (var item in e)
                     {
-                        using (context.EnterPath(index++.ToString(), true))
+                        using (context.EnterPath($"[{index++}]", true))
                         {
                             this.NotEmptyBoxed(item, context);
                         }
@@ -92,14 +92,14 @@
 
                     if (!context.Options.AllowEmptyCollections)
                     {
-                        this.Assert(index != 0, message);
+                        this.Assert(index != 0, message, path);
                     }
 
                     break;
                 default:
                     foreach (var pathValue in CachedPropertyExtractor<T>.GetProperties(value))
                     {
-                        using (context.EnterPath(pathValue.Path, false))
+                        using (context.EnterPath($".{pathValue.Path}", false))
                         {
                             this.NotEmptyBoxed(pathValue.Value, context);
                         }
@@ -111,10 +111,13 @@
 
         internal void NotEmptyBoxed(object? value, AssertContext context)
         {
-            this.Assert(value is not null, GetEmptyMessage(context.Path));
+            var path = context.Path;
+            this.Assert(value is not null, GetEmptyMessage(path), path);
             CachedEmptyDelegate.GetDelegate(value!.GetType())(this, value, context);
         }
 
-        private static string GetEmptyMessage(string? path) => $"value{path} is empty";
+        protected abstract void Assert(bool value, string message, string path);
+
+        private static string GetEmptyMessage(string? path) => $"{path} is empty";
     }
 }

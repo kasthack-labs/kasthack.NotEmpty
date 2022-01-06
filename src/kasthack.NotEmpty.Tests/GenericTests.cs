@@ -23,12 +23,4 @@ namespace kasthack.NotEmpty.Tests
         {
         }
     }
-
-    public class RawNotEmptyTest : NotEmptyTestBase
-    {
-        public RawNotEmptyTest()
-            : base((x, o) => kasthack.NotEmpty.Raw.NotEmptyExtensions.NotEmpty(x, o))
-        {
-        }
-    }
 }

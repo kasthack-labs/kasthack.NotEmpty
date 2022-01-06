@@ -158,6 +158,6 @@
         }
         #endregion
 
-        private void Action(object? value, AssertOptions? options = null) => this.action(value, options);
+        protected void Action(object? value, AssertOptions? options = null) => this.action(value, options);
     }
 }
