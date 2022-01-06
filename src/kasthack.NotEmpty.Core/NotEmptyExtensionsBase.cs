@@ -31,14 +31,19 @@
             var path = context.Path;
             string message = GetEmptyMessage(path);
             this.Assert(value is not null, message, path); // fast lane
-            if (
-                !(context.Options.AllowZerosInNumberArrays &&
-                context.IsArrayElement &&
-                value is byte or sbyte or short or ushort or char or int or uint or long or ulong or float or double or decimal or BigInteger
+            var skipDueToBeingNumberInArrayWhenAllowedByOptions = context.ElementKind == ElementKind.ArrayElement
+                && context.Options.AllowZerosInNumberArrays
+                && value is byte or sbyte or short or ushort or char or int or uint or long or ulong or float or double or decimal or BigInteger
 #if NET5_0_OR_GREATER
                     or Half or nint or nuint
 #endif
-                ))
+                ;
+            var skipDueToBeingBooleanPropertyWhenAllowedByOptions = context.ElementKind == ElementKind.Property && value is bool;
+            if (!(
+                skipDueToBeingBooleanPropertyWhenAllowedByOptions
+                ||
+                skipDueToBeingNumberInArrayWhenAllowedByOptions
+            ))
             {
                 this.Assert(!EqualityComparer<T>.Default.Equals(default!, value!), message, path);
             }
@@ -68,7 +73,7 @@
                     foreach (var key in d.Keys)
                     {
                         cnt++;
-                        using (context.EnterPath($"[{key}]", false))
+                        using (context.EnterPath($"[{key}]", ElementKind.DictionaryElement))
                         {
                             this.NotEmptyBoxed(d[key], context);
                         }
@@ -84,7 +89,7 @@
                     var index = 0;
                     foreach (var item in e)
                     {
-                        using (context.EnterPath($"[{index++}]", true))
+                        using (context.EnterPath($"[{index++}]", ElementKind.ArrayElement))
                         {
                             this.NotEmptyBoxed(item, context);
                         }
@@ -99,7 +104,7 @@
                 default:
                     foreach (var pathValue in CachedPropertyExtractor<T>.GetProperties(value))
                     {
-                        using (context.EnterPath($".{pathValue.Path}", false))
+                        using (context.EnterPath($".{pathValue.Path}", ElementKind.Property))
                         {
                             this.NotEmptyBoxed(pathValue.Value, context);
                         }

@@ -23,5 +23,10 @@
         /// Allows empty strings but not nulls.
         /// </summary>
         public bool AllowEmptyCollections { get; set; } = false;
+
+        /// <summary>
+        /// Allows bool properties to be false.
+        /// </summary>
+        public bool AllowFalseBooleanProperties { get; set; } = false;
     }
 }

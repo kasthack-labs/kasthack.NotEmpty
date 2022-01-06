@@ -32,6 +32,7 @@
 
         #region Numbers
 
+
         [Fact]
         public void NotDefaultPrimitiveWorks() => this.Action(new { Value = 1 });
 
@@ -49,6 +50,9 @@
 
         [Fact]
         public void BoxedDefaultPrimitiveThrows() => Assert.ThrowsAny<Exception>(() => this.Action(new { Value = (object)0 }));
+
+        [Fact]
+        public void BoxedDefaultPrimitiveThrowsAsRoot() => Assert.ThrowsAny<Exception>(() => this.Action(0));
 
         [Fact]
         public void NullNullableThrows() => Assert.ThrowsAny<Exception>(() => this.Action(new { Value = new Nullable<int>(), }));
@@ -156,6 +160,24 @@
 
             public InfiniteNestedStruct Child => new InfiniteNestedStruct { Value = this.Value + 1 };
         }
+        #endregion
+
+        #region Booleans
+
+        [Fact]
+        public void FalseThrows() => Assert.ThrowsAny<Exception>(() => this.Action(false));
+
+        [Fact]
+        public void TrueWorks() => this.Action(true);
+
+        [Fact]
+        public void FalseDoesntThrowWhenAllowed() => this.Action(new { Value = true }, new AssertOptions { AllowFalseBooleanProperties = true });
+
+        [Fact]
+        public void FalseThrowsWhenAllowedForDifferentKind() => Assert.ThrowsAny<Exception>(() => this.Action(false, new AssertOptions { AllowFalseBooleanProperties = true }));
+
+        [Fact]
+        public void FalseThrowsWhenAllowedForDifferentKindV2() => Assert.ThrowsAny<Exception>(() => this.Action(new[] { false }, new AssertOptions { AllowFalseBooleanProperties = true }));
         #endregion
 
         protected void Action(object? value, AssertOptions? options = null) => this.action(value, options);
