@@ -3,7 +3,7 @@
     <PackageId>kasthack.NotEmpty.Nunit</PackageId>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="NUnit" Version="3.13.2" />
+    <PackageReference Include="NUnit" Version="3.13.3" />
     <ProjectReference Include="..\kasthack.NotEmpty.Core\kasthack.NotEmpty.Core.csproj" />
   </ItemGroup>
 </Project>

@@ -2,8 +2,6 @@
 {
     public class AssertOptions
     {
-        internal static AssertOptions Default { get; } = new();
-
         /// <summary>
         /// Allow zeros in number arrays. Useful when you have binary data as a byte array.
         /// </summary>
@@ -28,5 +26,11 @@
         /// Allows bool properties to be false.
         /// </summary>
         public bool AllowFalseBooleanProperties { get; set; } = false;
+
+        /// <summary>
+        /// Allows enum values to have default values if there's a defined option for that.
+        /// </summary>
+        public bool AllowDefinedDefaultEnumValues { get; set; } = false;
+        internal static AssertOptions Default { get; } = new();
     }
 }

@@ -32,7 +32,6 @@
 
         #region Numbers
 
-
         [Fact]
         public void NotDefaultPrimitiveWorks() => this.Action(new { Value = 1 });
 
@@ -58,8 +57,37 @@
         public void NullNullableThrows() => Assert.ThrowsAny<Exception>(() => this.Action(new { Value = new Nullable<int>(), }));
 
         [Fact]
-        public void BoxedNullNullableThrows() => Assert.ThrowsAny<Exception>(() => this.Action(new { Value = (object)(new Nullable<int>()), }));
+        public void BoxedNullNullableThrows() => Assert.ThrowsAny<Exception>(() => this.Action(new { Value = (object?)(new Nullable<int>())!, }));
 
+        #endregion
+
+        #region Enums
+
+        // no false-positive
+        [Fact]
+        public void NotDefaultEnumWorks() => this.Action(new { Value = EnumWithDefaultValueDefined.No });
+
+        // no false-negative
+        [Fact]
+        public void DefaultEnumThrows() => Assert.ThrowsAny<Exception>(() => this.Action(new { Value = default(EnumWithDefaultValueDefined) }));
+
+        [Fact]
+        public void DefaultEnumDoesntThrowWhenAllowed() => this.Action(new { Value = default(EnumWithDefaultValueDefined) }, new AssertOptions { AllowDefinedDefaultEnumValues = true });
+
+        [Fact]
+        public void DefaultEnumThrowsWhenAllowedButNotDefined() => Assert.ThrowsAny<Exception>(() => this.Action(new { Value = default(EnumWithoutDefaultValue) }, new AssertOptions { AllowDefinedDefaultEnumValues = true }));
+
+        enum EnumWithDefaultValueDefined
+        {
+            Yes,
+            No,
+        }
+
+        enum EnumWithoutDefaultValue
+        {
+            Yes = 1,
+            No = 2,
+        }
         #endregion
 
         #region Strings
@@ -156,6 +184,10 @@
 
         public struct InfiniteNestedStruct
         {
+            public InfiniteNestedStruct()
+            {
+            }
+
             public int Value { get; set; } = 1;
 
             public InfiniteNestedStruct Child => new InfiniteNestedStruct { Value = this.Value + 1 };
@@ -165,13 +197,13 @@
         #region Booleans
 
         [Fact]
-        public void FalseThrows() => Assert.ThrowsAny<Exception>(() => this.Action(false));
+        public void FalseThrows() => Assert.ThrowsAny<Exception>(() => this.Action(new { Value = false }));
 
         [Fact]
         public void TrueWorks() => this.Action(true);
 
         [Fact]
-        public void FalseDoesntThrowWhenAllowed() => this.Action(new { Value = true }, new AssertOptions { AllowFalseBooleanProperties = true });
+        public void FalseDoesntThrowWhenAllowed() => this.Action(new { Value = false }, new AssertOptions { AllowFalseBooleanProperties = true });
 
         [Fact]
         public void FalseThrowsWhenAllowedForDifferentKind() => Assert.ThrowsAny<Exception>(() => this.Action(false, new AssertOptions { AllowFalseBooleanProperties = true }));
@@ -182,4 +214,5 @@
 
         protected void Action(object? value, AssertOptions? options = null) => this.action(value, options);
     }
+
 }

@@ -33,17 +33,21 @@
             this.Assert(value is not null, message, path); // fast lane
             var skipDueToBeingNumberInArrayWhenAllowedByOptions = context.ElementKind == ElementKind.ArrayElement
                 && context.Options.AllowZerosInNumberArrays
-                && value is byte or sbyte or short or ushort or char or int or uint or long or ulong or float or double or decimal or BigInteger
+                && value is byte or sbyte or short or ushort or char or int or uint or long or ulong or float or double or decimal or BigInteger or Complex
 #if NET5_0_OR_GREATER
                     or Half or nint or nuint
 #endif
                 ;
-            var skipDueToBeingBooleanPropertyWhenAllowedByOptions = context.ElementKind == ElementKind.Property && value is bool;
+            var skipDueToBeingBooleanPropertyWhenAllowedByOptions = context.Options.AllowFalseBooleanProperties && context.ElementKind == ElementKind.Property && value is bool;
+
+            var skipDueToBeingEnumPropertyWhenAllowedByOptions = context.Options.AllowDefinedDefaultEnumValues && typeof(T).IsEnum && Enum.IsDefined(typeof(T), value!);
+
             if (!(
                 skipDueToBeingBooleanPropertyWhenAllowedByOptions
                 ||
                 skipDueToBeingNumberInArrayWhenAllowedByOptions
-            ))
+                ||
+                skipDueToBeingEnumPropertyWhenAllowedByOptions))
             {
                 this.Assert(!EqualityComparer<T>.Default.Equals(default!, value!), message, path);
             }
