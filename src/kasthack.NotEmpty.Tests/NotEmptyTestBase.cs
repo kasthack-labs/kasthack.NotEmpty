@@ -33,7 +33,13 @@
         #region Numbers
 
         [Fact]
-        public void NotDefaultPrimitiveWorks() => this.Action(new { Value = 1 });
+        public void NotDefaultNullableDecimalWorks() => this.Action(new { Value = new Nullable<decimal>(1m) });
+
+        [Fact]
+        public void NotDefaultDecimalWorks() => this.Action(new { Value = 1m });
+
+        [Fact]
+        public void NotDefaultIntWorks() => this.Action(new { Value = 1 });
 
         [Fact]
         public void BoxedNotDefaultPrimitiveWorks() => this.Action(new { Value = (object)1 });

@@ -28,7 +28,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kasthack.NotEmpty.Raw", "ka
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CI", "CI", "{FA63E98E-9B05-480A-B16D-8D253629254A}"
 	ProjectSection(SolutionItems) = preProject
-		..\.github\workflows\codeql-analysis.yml = ..\.github\workflows\codeql-analysis.yml
 		..\.github\workflows\dotnet.yml = ..\.github\workflows\dotnet.yml
 		..\.github\workflows\push.yml = ..\.github\workflows\push.yml
 	EndProjectSection

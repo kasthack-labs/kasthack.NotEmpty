@@ -6,6 +6,29 @@
 
     public abstract class NotEmptyExtensionsBase
     {
+        private static readonly ISet<Type> KnownNumericTypes = new HashSet<Type>()
+        {
+            typeof(byte),
+            typeof(sbyte),
+            typeof(short),
+            typeof(ushort),
+            typeof(char),
+            typeof(int),
+            typeof(uint),
+            typeof(long),
+            typeof(ulong),
+            typeof(float),
+            typeof(double),
+            typeof(decimal),
+            typeof(BigInteger),
+            typeof(Complex),
+#if NET5_0_OR_GREATER
+            typeof(Half),
+            typeof(nint),
+            typeof(nuint),
+#endif
+        };
+
         [Obsolete($"Use {nameof(NotEmptyExtensionsBase.NotEmpty)}<T>(T, {nameof(AssertOptions)}) instead.")]
         public void NotEmpty<T>(T? value) => this.NotEmpty(value, null);
 
@@ -31,16 +54,16 @@
             var path = context.Path;
             string message = GetEmptyMessage(path);
             this.Assert(value is not null, message, path); // fast lane
+
+            var valueType = typeof(T);
+            var isKnownNumericType = KnownNumericTypes.Contains(valueType);
+
             var skipDueToBeingNumberInArrayWhenAllowedByOptions = context.ElementKind == ElementKind.ArrayElement
                 && context.Options.AllowZerosInNumberArrays
-                && value is byte or sbyte or short or ushort or char or int or uint or long or ulong or float or double or decimal or BigInteger or Complex
-#if NET5_0_OR_GREATER
-                    or Half or nint or nuint
-#endif
-                ;
+                && isKnownNumericType;
             var skipDueToBeingBooleanPropertyWhenAllowedByOptions = context.Options.AllowFalseBooleanProperties && context.ElementKind == ElementKind.Property && value is bool;
 
-            var skipDueToBeingEnumPropertyWhenAllowedByOptions = context.Options.AllowDefinedDefaultEnumValues && typeof(T).IsEnum && Enum.IsDefined(typeof(T), value!);
+            var skipDueToBeingEnumPropertyWhenAllowedByOptions = context.Options.AllowDefinedDefaultEnumValues && valueType.IsEnum && Enum.IsDefined(valueType, value!);
 
             if (!(
                 skipDueToBeingBooleanPropertyWhenAllowedByOptions
@@ -50,6 +73,11 @@
                 skipDueToBeingEnumPropertyWhenAllowedByOptions))
             {
                 this.Assert(!EqualityComparer<T>.Default.Equals(default!, value!), message, path);
+            }
+
+            if (isKnownNumericType)
+            {
+                return;
             }
 
             switch (value)
