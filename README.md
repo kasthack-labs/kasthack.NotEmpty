@@ -89,7 +89,7 @@ public class MyAmazingTest
 
     public class ComputedProperty
     {
-        public int Value => 1;
+        public int Value => 0;
     }
 }
 ````
