@@ -73,6 +73,11 @@ public class MyAmazingTest
         }.NotEmpty(new AssertOptions {
             MaxDepth = 200
         });
+
+        // won't throw
+        new ComputedProperty().NotEmpty(new AssertOptions {
+            IgnoreComputedProperties = true
+        })
     }
 
     public struct InfiniteNestedStruct
@@ -80,6 +85,11 @@ public class MyAmazingTest
         public int Value { get; set; } = 1;
 
         public InfiniteNestedStruct Child => new InfiniteNestedStruct { Value = this.Value + 1 };
+    }
+
+    public class ComputedProperty
+    {
+        public int Value => 1;
     }
 }
 ````

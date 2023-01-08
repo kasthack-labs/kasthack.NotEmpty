@@ -2,9 +2,11 @@
 {
     using System;
 
-    public class EmptyException : Exception
+#pragma warning disable RCS1194 // Implement exception constructors.
+    public sealed class EmptyException : Exception
+#pragma warning restore RCS1194 // Implement exception constructors.
     {
-        public EmptyException(string message, string path)
+        internal EmptyException(string message, string path)
             : base(message)
         {
             this.Path = path;

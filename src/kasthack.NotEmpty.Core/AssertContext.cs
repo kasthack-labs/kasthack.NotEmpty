@@ -11,6 +11,8 @@
     {
         private readonly Stack<string> pathSegments = new();
 
+        public AssertContext(AssertOptions options) => this.Options = options;
+
         public AssertOptions Options { get; }
 
         public int CurrentDepth => this.pathSegments.Count;
@@ -18,8 +20,6 @@
         public string Path => "(value)" + string.Concat(this.pathSegments.Reverse());
 
         public ElementKind ElementKind { get; set; } = Core.ElementKind.Root;
-
-        public AssertContext(AssertOptions options) => this.Options = options;
 
         public IDisposable EnterPath(string segment, ElementKind elementKind) => new PathContext(this, segment, elementKind);
 

@@ -3,7 +3,8 @@
     <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
     <LangVersion>10.0</LangVersion>
     <Nullable>enable</Nullable>
-    <NoWarn>SA1633;SA1600;SA1601;CS1591;SA1300</NoWarn>
+    <NoWarn>SA1633;SA1623;SA1600;SA1601;CS1591;SA1300</NoWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <StyleCopTreatErrorsAsWarnings>True</StyleCopTreatErrorsAsWarnings>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -11,7 +12,7 @@
     <PublishDocumentationFile>true</PublishDocumentationFile>
     <PublishDocumentationFiles>true</PublishDocumentationFiles>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageVersion>1.3.0</PackageVersion>
+    <PackageVersion>1.4.0</PackageVersion>
     <PackageDescription>.NotEmpty&lt;T&gt;() test extension</PackageDescription>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>kasthack nunit xunit mstest test empty null notempty emptinness nullability</PackageTags>

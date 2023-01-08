@@ -1,7 +1,5 @@
 ﻿namespace kasthack.NotEmpty.Raw
 {
-    using System;
-
     using kasthack.NotEmpty.Core;
 
     /// <summary>
@@ -19,7 +17,7 @@
         /// <typeparam name="T">Type of value(inferred by the compiler).</typeparam>
         public static void NotEmpty<T>(this T? value, AssertOptions? assertOptions = null) => Instance.NotEmpty(value, assertOptions);
 
-        private class NotEmptyExtensionsBaseRaw : NotEmptyExtensionsBase
+        private sealed class NotEmptyExtensionsBaseRaw : NotEmptyExtensionsBase
         {
             protected override void Assert(bool value, string message, string path)
             {

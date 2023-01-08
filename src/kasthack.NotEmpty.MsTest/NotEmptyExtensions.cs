@@ -1,6 +1,5 @@
 namespace kasthack.NotEmpty.MsTest
 {
-    using System;
     using kasthack.NotEmpty.Core;
 
     /// <summary>
@@ -18,7 +17,7 @@ namespace kasthack.NotEmpty.MsTest
         /// <typeparam name="T">Type of value(inferred by the compiler).</typeparam>
         public static void NotEmpty<T>(this T? value, AssertOptions? assertOptions = null) => Instance.NotEmpty(value, assertOptions);
 
-        private class NotEmptyExtensionsBaseXunit : NotEmptyExtensionsBase
+        private sealed class NotEmptyExtensionsBaseXunit : NotEmptyExtensionsBase
         {
             protected override void Assert(bool value, string message, string path) => global::Microsoft.VisualStudio.TestTools.UnitTesting.Assert.IsTrue(value, message);
         }

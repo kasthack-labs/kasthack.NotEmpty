@@ -6,7 +6,7 @@
 
     public abstract class NotEmptyExtensionsBase
     {
-        private static readonly ISet<Type> KnownNumericTypes = new HashSet<Type>()
+        private static readonly IReadOnlySet<Type> KnownNumericTypes = new HashSet<Type>()
         {
             typeof(byte),
             typeof(sbyte),
@@ -90,7 +90,9 @@
                     or DateOnly _
                     or TimeOnly _
 #endif
+#pragma warning disable SA1024 // Doesn't work with #if
                     :
+#pragma warning restore SA1024
                     break;
                 case string s:
                     this.Assert(
@@ -134,11 +136,14 @@
 
                     break;
                 default:
-                    foreach (var pathValue in CachedPropertyExtractor<T>.GetProperties(value))
+                    foreach (var pathValue in CachedPropertyExtractor<T>.GetPropertiesAndTupleFields(value!))
                     {
-                        using (context.EnterPath($".{pathValue.Path}", ElementKind.Property))
+                        if (!pathValue.IsComputed || !context.Options.IgnoreComputedProperties)
                         {
-                            this.NotEmptyBoxed(pathValue.Value, context);
+                            using (context.EnterPath($".{pathValue.Path}", ElementKind.Property))
+                            {
+                                this.NotEmptyBoxed(pathValue.Value, context);
+                            }
                         }
                     }
 
